@@ -1,7 +1,7 @@
-<table>
+<table align="center">
     <tr>
-        <td><h1>LionLearn</h1></td>
-        <td> <img src="LionLearn/lionLearnLogo.png" width="350"  height="350" title="hover text">   </td>
+        <td align="center"><h1>LionLearn</h1></td>
+        <td> <img src="https://github.com/iamollas/LionLearn/blob/master/lionLearnLogo.png" width="150"  height="150">   </td>
     </tr>
 </table>
 

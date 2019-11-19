@@ -1,6 +1,6 @@
 <table align="center">
     <tr>
-        <td> <img src="https://github.com/iamollas/LionLearn/blob/master/lionLearnLogo.png" width="220"  height="220"></td>
+        <td> <img src="https://github.com/iamollas/LionLearn/blob/master/lionLearnLogo.png" width="200"  height="200"></td>
         <td align="center"><p><h1>LionLearn</h1><h6>A library providing techniques for local interpretation of machine learning models</h6></p></td>
     </tr>
 </table>

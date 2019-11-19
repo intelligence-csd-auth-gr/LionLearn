@@ -8,8 +8,8 @@ Technological breakthroughs on smart homes, self-driving cars, health care and r
 
 <table align="center">
     <tr>
-        <td> <img src="https://github.com/iamollas/LioNets/raw/master/lionetsArchitecture.png" width="300"  height="300"></td>
-        <td align="center"><p>In the above picture is presenting the LioNets architecture. The main difference between LIME and LioNets is that the neighbourhood generation process takes place in the penultimate level of the neural network, instead of the original space. Thus, it is guaranteed that the generated neighbours will have true adjacency with the original instance, that we want to explain.</p></td>
+        <td width="70%"> <img src="https://github.com/iamollas/LioNets/raw/master/lionetsArchitecture.png" width="100%"></td>
+        <td width="30%"><p>In this picture is presenting the LioNets architecture. The main difference between LIME and LioNets is that the neighbourhood generation process takes place in the penultimate level of the neural network, instead of the original space. Thus, it is guaranteed that the generated neighbours will have true adjacency with the original instance, that we want to explain.</p></td>
     </tr>
 </table>
 

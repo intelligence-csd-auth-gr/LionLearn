@@ -17,4 +17,4 @@ Technological breakthroughs on smart homes, self-driving cars, health care and r
 Please cite the paper if you use it in your work or experiments :D :
 
 - https://arxiv.org/abs/1906.06566
-- proceedings coming soon
+- proceedings coming soon ECML-PKDD-AIMLAI-XKDD 2019

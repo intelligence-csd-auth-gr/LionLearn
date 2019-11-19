@@ -6,7 +6,7 @@
 </table>
 
 This library will provide ways to local explain machine learning models like random forests, 
-neural networks, etc. Every is model-specific and local-based. Currently there are two approaches:
+neural networks, etc. Every technique of this library will be model-specific and local-based. Currently there are the following two approaches available:
 
 1. [LioNets](https://github.com/iamollas/LionLearn/tree/master/LioNets): Local Interpretation Of Neural nETworkS through penultimate layer decoding
 2. [LionForests](https://github.com/iamollas/LionLearn/tree/master/LionForests): Local Interpretation Of raNdom FORESts through paTh Selection

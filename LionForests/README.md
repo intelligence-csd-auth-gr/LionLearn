@@ -14,5 +14,5 @@ Dataset | No of Features | No of Instances | Type
 ## Citation
 Please cite the paper if you use it in your work or experiments :D :
 
-- arxiv coming soon
-- proceedings coming soon
+- https://arxiv.org/abs/1911.08780
+- submitted to ECAI2020

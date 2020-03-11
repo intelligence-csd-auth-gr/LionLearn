@@ -14,110 +14,7 @@ import kmedoids
 import shap
 import random
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
-
-def roundup(a, digits=0):
-    """roundup function is used to round up a float number by specific number of digits. Ex: roundup(0.005435,3)->0.006
-    Args:
-        a: The float number
-        digits: the number of digits of the
-    Return:
-        upper rounded float number
-    """
-    n = 10 ** -digits
-    return round(math.ceil(a / n) * n, digits)
-
-
-def path_similarity(path_1, path_2, feature_names, min_max_feature_values):
-    """path_similarity function computes the similarity of two paths (rules)
-    Args:
-        path_1: the first path
-        path_2: the second path
-        feature_names: the list of features
-        min_max_feature_values: the min and max possible values of each feature
-    Return:
-        similarity: the similarity of the paths
-    """
-    similarity = 0
-    for i in feature_names:
-        if i in path_1 and i in path_2:
-            if len(path_1[i]) == 2:
-                l1 = path_1[i][1][1]
-                u1 = path_1[i][0][1]
-            else:
-                if path_1[i][0][0] == '<=':
-                    u1 = path_1[i][0][1]
-                    l1 = min_max_feature_values[i][0]
-                else:
-                    l1 = path_1[i][0][1]
-                    u1 = min_max_feature_values[i][1]
-            if len(path_2[i]) == 2:
-                l2 = path_2[i][1][1]
-                u2 = path_2[i][0][1]
-            else:
-                if path_2[i][0][0] == '<=':
-                    u2 = path_2[i][0][1]
-                    l2 = min_max_feature_values[i][0]
-                else:
-                    l2 = path_2[i][0][1]
-                    u2 = min_max_feature_values[i][1]
-            if u1 <= l2 or u2 <= l2:
-                similarity = similarity
-            else:
-                inter = min(u1, u2) - max(l1, l2)
-                union = max(u1, u2) - min(l1, l2)
-                if union != 0:
-                    similarity = similarity + inter / union
-        elif i not in path_1 and i not in path_2:
-            similarity = similarity + 1
-    similarity = similarity / len(feature_names)
-    return similarity
-
-
-def path_distance(path_1, path_2, feature_names, min_max_feature_values):
-    """path_distance function computes the distance of two paths (rules)
-    Args:
-        path_1: the first path
-        path_2: the second path
-        feature_names: the list of features
-        min_max_feature_values: the min and max possible values of each feature
-    Return:
-        distance: the distance of the paths
-    """
-    distance = 0
-    feature_count = 0
-    for i in feature_names:
-        if i in path_1 and i in path_2:
-            if len(path_1[i]) == 2:
-                l1 = path_1[i][1][1]
-                u1 = path_1[i][0][1]
-            else:
-                if path_1[i][0][0] == '<=':
-                    u1 = path_1[i][0][1]
-                    l1 = min_max_feature_values[i][0]
-                else:
-                    l1 = path_1[i][0][1]
-                    u1 = min_max_feature_values[i][1]
-            if len(path_2[i]) == 2:
-                l2 = path_2[i][1][1]
-                u2 = path_2[i][0][1]
-            else:
-                if path_2[i][0][0] == '<=':
-                    u2 = path_2[i][0][1]
-                    l2 = min_max_feature_values[i][0]
-                else:
-                    l2 = path_2[i][0][1]
-                    u2 = min_max_feature_values[i][1]
-            distance = distance + (1 / 2) * (abs(l1 - l2) + abs(u1 - u2))
-            feature_count = feature_count + 1
-        elif i in path_1 or i in path_2:
-            distance = distance + 1
-            feature_count = feature_count + 1
-    if feature_count != 0:
-        distance = distance / feature_count
-    else:
-        distance = 0
-    return distance
-
+from lionforests_utility import roundup, path_similarity, path_distance
 
 class LionForests:
     """Class for interpreting random forests classifier through following_breacrumbs technique"""
@@ -151,6 +48,7 @@ class LionForests:
         self.min_max_feature_values = {}
         self.number_of_estimators = 0
         self.ranked_features = {}
+        self.quorum = 0
 
     def transform_categorical_data(self, train_data, train_target, feature_names, to_ordinal_data=None, to_onehot_data=None):
         self.ordinal_data = to_ordinal_data
@@ -241,10 +139,10 @@ class LionForests:
         if parameters is None:
             parameters = [{
                 'max_depth': [10],#1, 5, 7, 10
-                'max_features': ['sqrt'], #'sqrt', 'log2', 0.75, None
-                'bootstrap': [False], #True, False
+                'max_features': [0.75], #'sqrt', 'log2', 0.75, None
+                'bootstrap': [True], #True, False
                 'min_samples_leaf' : [1], #1, 2, 5, 10, 0.10
-                'n_estimators': [100] #10, 100, 500, 1000
+                'n_estimators': [500] #10, 100, 500, 1000
             }]
         clf = GridSearchCV(estimator=random_forest, param_grid=parameters, cv=10, n_jobs=-1, verbose=1, scoring='f1')
         clf.fit(train_data, train_target)
@@ -252,6 +150,7 @@ class LionForests:
         self.model = clf.best_estimator_
         self.trees = self.model.estimators_
         self.number_of_estimators = self.model.n_estimators
+        self.quorum = int(self.number_of_estimators / 2 + 1)
         for i in range(len(self.feature_names)):
             self.min_max_feature_values[self.feature_names[i]] = [min(train_data[:, i]), max(train_data[:, i])]
         if len(train_data) > 10000:
@@ -323,7 +222,7 @@ class LionForests:
         del instance, prediction, total_leq, total_b
         return [ranges, len(rules)]  # If i want rules at natural language i have to add rules variable here too
 
-    def following_breadcrumbs(self, instance, info=False, reduction=True, save_plots=False, complexity=4):
+    def following_breadcrumbs(self, instance, info=False, reduction=True, save_plots=False, complexity=4, instance_quorum=0, medoids=0):
         """following_breadcrumbs function finds a single range rule which will be the explanation for the prediction
         of this instance
         Args:
@@ -335,6 +234,18 @@ class LionForests:
         Return:
             a feature range rule which will be the explanation
         """
+
+        if instance_quorum <= 0:
+            instance_quorum = self.quorum
+
+        number_of_medoids = medoids
+        if medoids <= 0:
+            number_of_medoids = 5
+            if self.number_of_estimators < 5:
+                number_of_medoids = self.number_of_estimators
+            if self.number_of_estimators >= 100:
+                number_of_medoids = int(math.ceil(instance_quorum * 3 / 22))  # 1100 = 11 * 100
+
         rules = self.path_finder(instance, info)[0]
         original_number_of_rules = len(rules)
 
@@ -345,7 +256,7 @@ class LionForests:
         local_feature_names = list(items)
         original_number_of_features = len(local_feature_names)
         if reduction:
-            temp_rules = self.reduce_rules(rules, complexity)
+            temp_rules = self.reduce_rules(rules, instance_quorum, number_of_medoids)
             if len(temp_rules[0]) != 0:
                 rules = temp_rules[0]
                 local_feature_names = temp_rules[1]
@@ -357,7 +268,7 @@ class LionForests:
             if feature in local_feature_names:
                 bars, bars_len = self._pre_feature_range_caluclation(rules,feature,complexity)
                 if bars != False:
-                    aggregation = self._aggregated_feature_range(rules, bars, feature, save_plots, complexity)
+                    aggregation = self._aggregated_feature_range(bars, feature, save_plots, complexity)
                     temp_f_mins[feature] = aggregation[0]
                     temp_f_maxs[feature] = aggregation[1]
         f_mins = []
@@ -402,7 +313,7 @@ class LionForests:
         del temp_f_maxs, temp_f_mins, f_maxs, f_mins, feature_rule_limits
         return [rule[:-3] + " then " + class_name,original_number_of_rules, original_number_of_features, len(rules), len(local_feature_names)]
 
-    def reduce_rules(self, rules, complexity=4):
+    def reduce_rules(self, rules, instance_quorum, number_of_medoids):
         """following_breadcrumbs function finds
         Args:
             instance: The instance we want to find the paths
@@ -432,7 +343,7 @@ class LionForests:
             for p in pr:
                 items.add(p)
             new_feature_list = list(items)
-        while size < int(self.number_of_estimators / 2 + 1) and k < size_of_ar:
+        while size < instance_quorum and k < size_of_ar:
             feature_set = set()
             for i in range(0, k):
                 for j in list(list(frequent_itemsets['antecedents'])[i]):
@@ -446,13 +357,13 @@ class LionForests:
             size = len(reduced_rules)
             k += 1
         del get_itemsets, te, te_ary, df, frequent_itemsets
-        if len(reduced_rules) < int(self.number_of_estimators / 2 + 1):
+        if len(reduced_rules) < instance_quorum:
             reduced_rules = rules
             for pr in reduced_rules:
                 for p in pr:
                     items.add(p)
                 new_feature_list = list(items)
-        if len(reduced_rules) > int(self.number_of_estimators / 2 + 1): #If we need more reduction on path level
+        if len(reduced_rules) > instance_quorum: #If we need more reduction on path level
             A = []
             for k in range(len(reduced_rules)):
                 B = []
@@ -467,31 +378,26 @@ class LionForests:
                         B.append(1 - sim)
                 A.append(B)
             A = np.array(A)
-            number_of_medoids = 5
-            if self.number_of_estimators < 5:
-                number_of_medoids = self.number_of_estimators
-            if self.number_of_estimators >= 100:
-                number_of_medoids = int(math.ceil((self.number_of_estimators / 2 + 1) * 3 / 22))  # 1100 = 11 * 100
             MS, S = kmedoids.kMedoids(A, number_of_medoids)
             medoids_sorted = sorted(S, key=lambda k: len(S[k]), reverse=True)
             k = 0
             size = 0
             reduced_rules_medoids = []
-            while size < int(self.number_of_estimators / 2 + 1) and k < len(medoids_sorted):
+            while size < instance_quorum and k < len(medoids_sorted):
                 for j in S[medoids_sorted[k]]:
                     reduced_rules_medoids.append(reduced_rules[j])
                 k += 1
                 size = len(reduced_rules_medoids)
             items = set()
-            if len(reduced_rules_medoids) >= int(self.number_of_estimators / 2 + 1):
+            if len(reduced_rules_medoids) >= instance_quorum:
                 reduced_rules = reduced_rules_medoids
                 for pr in reduced_rules_medoids:
                     for p in pr:
                         items.add(p)
                 new_feature_list = list(items)
-        if len(reduced_rules) > int(self.number_of_estimators / 2 + 1):
+        if len(reduced_rules) > instance_quorum:
             random.shuffle(reduced_rules)
-            reduced_rules = reduced_rules[:int(self.number_of_estimators / 2 + 1)]
+            reduced_rules = reduced_rules[:instance_quorum]
             items = set()
             for pr in reduced_rules:
                 for p in pr:
@@ -537,13 +443,12 @@ class LionForests:
         bars_len = [len(bar) for bar in bars]
         return bars, bars_len
 
-    def _aggregated_feature_range(self, rules, bars, feature, save_plots=False, complexity=4):
+    def _aggregated_feature_range(self, bars, feature, save_plots=False, complexity=4):
         """_aggregated_feature_range function returns the min and max value from the intersection of all paths
         Args:
-            rules:
-            feature:
-            save_plots:
-            complexity:
+            feature: the feature which range we want to find
+            save_plots: if yes then it will save the bar and stacked area plots of each feature
+            complexity: determines how many digits we will use to descritize
         Return:
             min max of the intersect area of all paths for a feature
         """

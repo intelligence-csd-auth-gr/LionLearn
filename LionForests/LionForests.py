@@ -50,27 +50,12 @@ class LionForests:
         self.ranked_features = {}
         self.quorum = 0
 
-    def transform_categorical_data(self, train_data, train_target, feature_names, to_ordinal_data=None, to_onehot_data=None):
-        self.ordinal_data = to_ordinal_data
+    def transform_categorical_data(self, train_data, train_target, feature_names):
         self.onehot_data = to_onehot_data
-        if to_ordinal_data is not None and to_onehot_data is not None:
-            self.onehot_transformation = True
-            self.ordinal_transformation = True
-            self.numerical_data = [i for i in feature_names if i not in to_ordinal_data and i not in to_onehot_data]
-        elif to_ordinal_data is None and to_onehot_data is not None:
-            self.onehot_transformation = True
-            self.ordinal_transformation = False
-            self.numerical_data = [i for i in feature_names if i not in to_onehot_data]
-        elif to_ordinal_data is not None and to_onehot_data is None:
-            self.ordinal_transformation = True
-            self.ordinal_transformation = False
-            self.numerical_data = [i for i in feature_names if i not in to_ordinal_data]
-        else:
-            self.ordinal_transformation = False
-            self.ordinal_transformation = False
-            print("No encoding transformation")
-            return train_data, train_target, feature_names
-
+        self.onehot_transformation = True
+        self.numerical_data = [i for i in feature_names if i not in to_onehot_data]
+        
+        
         numerical = pd.DataFrame(train_data, columns=feature_names)[self.numerical_data].values
         num = pd.DataFrame(numerical, columns=self.numerical_data)
         if self.onehot_transformation:
@@ -138,11 +123,11 @@ class LionForests:
         parameters = params
         if parameters is None:
             parameters = [{
-                'max_depth': [10],#1, 5, 7, 10
-                'max_features': [0.75], #'sqrt', 'log2', 0.75, None
-                'bootstrap': [True], #True, False
-                'min_samples_leaf' : [1], #1, 2, 5, 10, 0.10
-                'n_estimators': [500] #10, 100, 500, 1000
+                'max_depth': [1, 5, 7, 10],#1, 5, 7, 10
+                'max_features': ['sqrt', 'log2', 0.75, None], #'sqrt', 'log2', 0.75, None
+                'bootstrap': [True, False], #True, False
+                'min_samples_leaf' : [1, 2, 5, 10, 0.10], #1, 2, 5, 10, 0.10
+                'n_estimators': [10, 100, 500, 1000] #10, 100, 500, 1000
             }]
         clf = GridSearchCV(estimator=random_forest, param_grid=parameters, cv=10, n_jobs=-1, verbose=1, scoring='f1')
         clf.fit(train_data, train_target)
@@ -282,6 +267,7 @@ class LionForests:
                 f_maxs.append(temp_f_maxs[feature])
             else:
                 f_maxs.append(0)
+        instance = self.utilizer.transform([instance])[0]
         class_name = self.class_names[self.model.predict([instance])[0]]
         if self.categorical_features is not None:
             for ranked_f in self.ranked_features[class_name]:

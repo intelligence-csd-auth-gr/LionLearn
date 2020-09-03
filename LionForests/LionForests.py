@@ -1,3 +1,4 @@
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
@@ -13,13 +14,12 @@ from collections import Counter
 import kmedoids
 import shap
 import random
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from lionforests_utility import roundup, path_similarity, path_distance
 
 class LionForests:
     """Class for interpreting random forests classifier through following_breacrumbs technique"""
 
-    def __init__(self, model=None, utilizer=None, feature_names=None, class_names=None):
+    def __init__(self, model=None, trained=False, utilizer=None, feature_names=None, class_names=None, categorical_features=None):
         """Init function
         Args:
             model: The trained RF model
@@ -43,13 +43,21 @@ class LionForests:
         if model is not None:
             self.trees = model.estimators_
         self.feature_names = feature_names
+        self.categorical_features = categorical_features
         self.class_names = class_names
         self.accuracy = 0
         self.min_max_feature_values = {}
         self.number_of_estimators = 0
         self.ranked_features = {}
         self.quorum = 0
-
+        if trained:
+            self._trained()
+        
+    def _trained(self):
+        self.trees = self.model.estimators_
+        self.number_of_estimators = self.model.n_estimators
+        self.quorum = int(self.number_of_estimators / 2 + 1)
+        
     def transform_categorical_data(self, train_data, train_target, feature_names):
         self.onehot_data = to_onehot_data
         self.onehot_transformation = True
@@ -123,11 +131,11 @@ class LionForests:
         parameters = params
         if parameters is None:
             parameters = [{
-                'max_depth': [1, 5, 7, 10],#1, 5, 7, 10
-                'max_features': ['sqrt', 'log2', 0.75, None], #'sqrt', 'log2', 0.75, None
-                'bootstrap': [True, False], #True, False
-                'min_samples_leaf' : [1, 2, 5, 10, 0.10], #1, 2, 5, 10, 0.10
-                'n_estimators': [10, 100, 500, 1000] #10, 100, 500, 1000
+                'max_depth': [5],#[1, 5, 7, 10],#1, 5, 7, 10
+                'max_features': ['sqrt'],#['sqrt', 'log2', 0.75, None], #'sqrt', 'log2', 0.75, None
+                'bootstrap': [True],#[True, False], #True, False
+                'min_samples_leaf' : [2],#[1, 2, 5, 10, 0.10], #1, 2, 5, 10, 0.10
+                'n_estimators': [250]#[10, 100, 500, 1000] #10, 100, 500, 1000
             }]
         clf = GridSearchCV(estimator=random_forest, param_grid=parameters, cv=10, n_jobs=-1, verbose=1, scoring='f1')
         clf.fit(train_data, train_target)
@@ -138,19 +146,10 @@ class LionForests:
         self.quorum = int(self.number_of_estimators / 2 + 1)
         for i in range(len(self.feature_names)):
             self.min_max_feature_values[self.feature_names[i]] = [min(train_data[:, i]), max(train_data[:, i])]
-        if len(train_data) > 10000:
-            for ind in range(len(self.class_names)):
-                d = {'Feature': feature_names, 'Importance': self.model.feature_importances_}
-                self.ranked_features[self.class_names[ind]] = \
-                    pd.DataFrame(data=d).sort_values(by=['Importance'], ascending=False)['Feature'].values
-        else:
-            explainer = shap.TreeExplainer(self.model)
-            shap_values = explainer.shap_values(train_data)
-            for ind in range(len(self.class_names)):
-                global_shap_values = np.abs(shap_values[ind]).mean(0)
-                d = {'Feature': feature_names, 'Importance': global_shap_values}
-                self.ranked_features[self.class_names[ind]] = \
-                    pd.DataFrame(data=d).sort_values(by=['Importance'], ascending=False)['Feature'].values
+        for ind in range(len(self.class_names)):
+            d = {'Feature': feature_names, 'Importance': self.model.feature_importances_}
+            self.ranked_features[self.class_names[ind]] = \
+                pd.DataFrame(data=d).sort_values(by=['Importance'], ascending=False)['Feature'].values
 
 
     def path_finder(self, instance, info=False):
@@ -162,7 +161,8 @@ class LionForests:
             a list which contains a dictionary with features as keys and their min max ranges as values, as well as the
             number of the paths
         """
-        instance = self.utilizer.transform([instance])[0]
+        if self.utilizer is not None:
+            instance = self.utilizer.transform([instance])[0]
         prediction = int(self.model.predict([instance])[0])
         total_leq = {}  # All the rules with less equal operators ex: a <= 1
         total_b = {}  # All the rules with bigger than operators ex: c > 0.1
@@ -267,7 +267,8 @@ class LionForests:
                 f_maxs.append(temp_f_maxs[feature])
             else:
                 f_maxs.append(0)
-        instance = self.utilizer.transform([instance])[0]
+        if self.utilizer is not None:
+            instance = self.utilizer.transform([instance])[0]
         class_name = self.class_names[self.model.predict([instance])[0]]
         if self.categorical_features is not None:
             for ranked_f in self.ranked_features[class_name]:
@@ -276,24 +277,37 @@ class LionForests:
                 for ff in self.categorical_features:
                     if ff in self.feature_names[f]:
                         if self.feature_names[f] in local_feature_names:
-                            mmi = self.utilizer.inverse_transform(np.array([f_mins, f_mins]))[0][f]
-                            mma = self.utilizer.inverse_transform(np.array([f_maxs, f_maxs]))[0][f]
+                            if self.utilizer is not None:
+                                mmi = self.utilizer.inverse_transform(np.array([f_mins, f_mins]))[0][f]
+                                mma = self.utilizer.inverse_transform(np.array([f_maxs, f_maxs]))[0][f]
+                            else:
+                                mmi = np.array([f_mins, f_mins])[0][f]
+                                mma = np.array([f_maxs, f_maxs])[0][f]
+                            
                             if str(round(mma, 3)) == '1.0':
                                 feature_rule_limits[self.feature_names[f]] = [mmi, mma]
                                 rule = rule + self.feature_names[f] + " & "
                             it_was_categ = True
                 if not it_was_categ:
                     if self.feature_names[f] in local_feature_names:
-                        mmi = self.utilizer.inverse_transform(np.array([f_mins, f_mins]))[0][f]
-                        mma = self.utilizer.inverse_transform(np.array([f_maxs, f_maxs]))[0][f]
+                        if self.utilizer is not None:
+                            mmi = self.utilizer.inverse_transform(np.array([f_mins, f_mins]))[0][f]
+                            mma = self.utilizer.inverse_transform(np.array([f_maxs, f_maxs]))[0][f]
+                        else:
+                            mmi = np.array([f_mins, f_mins])[0][f]
+                            mma = np.array([f_maxs, f_maxs])[0][f]
                         feature_rule_limits[self.feature_names[f]] = [mmi, mma]
                         rule = rule + str(round(mmi, 3)) + "<=" + self.feature_names[f] + "<=" + str(round(mma, 3)) + " & "
         else:
             for ranked_f in self.ranked_features[class_name]:
                 f = self.feature_names.index(ranked_f)
                 if self.feature_names[f] in local_feature_names:
-                    mmi = self.utilizer.inverse_transform(np.array([f_mins, f_mins]))[0][f]
-                    mma = self.utilizer.inverse_transform(np.array([f_maxs, f_maxs]))[0][f]
+                    if self.utilizer is not None:
+                        mmi = self.utilizer.inverse_transform(np.array([f_mins, f_mins]))[0][f]
+                        mma = self.utilizer.inverse_transform(np.array([f_maxs, f_maxs]))[0][f]
+                    else:
+                        mmi = np.array([f_mins, f_mins])[0][f]
+                        mma = np.array([f_maxs, f_maxs])[0][f]
                     feature_rule_limits[self.feature_names[f]] = [mmi, mma]
                     rule = rule + str(round(mmi, 3)) + "<=" + self.feature_names[f] + "<=" + str(round(mma, 3)) + " & "
         del temp_f_maxs, temp_f_mins, f_maxs, f_mins, feature_rule_limits

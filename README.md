@@ -1,3 +1,7 @@
+[LioNets Version 2](https://github.com/iamollas/LionLearn/tree/master/LioNets) is out now
+
+# LionLearn
+
 <table align="center">
     <tr>
         <td> <img src="https://github.com/iamollas/LionLearn/blob/master/lionLearnLogo.png" width="200"  height="200"></td>

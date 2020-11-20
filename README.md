@@ -1,4 +1,4 @@
-[LioNets Version 2](https://github.com/iamollas/LionLearn/tree/master/LioNets) is out now
+[LioNets Version 2](https://github.com/iamollas/LionLearn/tree/master/LioNets_V2) is out now
 
 # LionLearn
 

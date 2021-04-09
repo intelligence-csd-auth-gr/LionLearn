@@ -1,3 +1,4 @@
+import numpy as np
 class DummyUtilizer():
     def __init__(self):
         self.utilizername = "So dymmy"

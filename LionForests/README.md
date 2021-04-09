@@ -3,7 +3,7 @@
 
 Due to their exceptionally high ability for analyzing vast quantities of data and making accurate decisions, machine learning systems are integrated into the health, industry and banking sectors, among others. On the other hand, their obscure decision-making processes lead to socio-ethical issues as they interfere with people's lives.  
 
-![LionForests Flowchart]("")
+![LionForests Flowchart]("https://github.com/intelligence-csd-auth-gr/LionLearn/blob/master/LionForests/LionForestsFlow.png?raw=true")
 
 In critical situations involving discrimination, gender inequality, economic damage, and even the possibility of casualties, machine learning models must be able to provide clear interpretations for their decisions. Otherwise, their obscure decision-making processes can lead to socioethical issues as they interfere with people's lives. In the aforementioned sectors, random forest algorithms strive, thus their ability to explain themselves is an obvious requirement. In this paper, we present LionForests, which relies on a preliminary work of ours. LionForests is a random forest-specific interpretation technique, which provides rules as explanations. It is applicable from binary classification tasks to multi-class classification and regression tasks, and it is supported by a stable theoretical background. Experimentation, including sensitivity analysis and comparison with state-of-the-art techniques, is also performed to demonstrate the efficacy of our contribution. Finally, we highlight a property of LionForest that distinguishes it from other techniques that do not have this property.
 

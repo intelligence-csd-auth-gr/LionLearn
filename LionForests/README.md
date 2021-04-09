@@ -7,6 +7,21 @@ Due to their exceptionally high ability for analyzing vast quantities of data an
 
 In critical situations involving discrimination, gender inequality, economic damage, and even the possibility of casualties, machine learning models must be able to provide clear interpretations for their decisions. Otherwise, their obscure decision-making processes can lead to socioethical issues as they interfere with people's lives. In the aforementioned sectors, random forest algorithms strive, thus their ability to explain themselves is an obvious requirement. In this paper, we present LionForests, which relies on a preliminary work of ours. LionForests is a random forest-specific interpretation technique, which provides rules as explanations. It is applicable from binary classification tasks to multi-class classification and regression tasks, and it is supported by a stable theoretical background. Experimentation, including sensitivity analysis and comparison with state-of-the-art techniques, is also performed to demonstrate the efficacy of our contribution. Finally, we highlight a property of LionForest that distinguishes it from other techniques that do not have this property.
 
+## Run through Docker
+Clone this repository and navigate to the folder LionForests/Docker. There run these commands
+```bash
+docker build -t lionforests .
+docker run -p 8888:8888 lionforests
+```
+Then, just open the url the terminal prined and you are ready to play with the notebooks. 
+
+## Pull from Docker and pip install
+!TBA
+
+## Requirements
+For the requirements just check the requirements.txt file. LF in order to run properly needs these libraries. The libraries anchor-exp, dask-ml, imbalanced-learn and pyfpgrowth, are necessary for the rest of the algorithms we used in our comparisons (CHIRPS, Anchors, DeFrag Rules).
+
+
 ## Example #1
 ```python
 X, y, feature_names, class_names = load_your_data()

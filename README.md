@@ -4,7 +4,7 @@
 
 <table align="center">
     <tr>
-        <td> <img src="https://github.com/iamollas/LionLearn/blob/master/lionLearnLogo.png" width="200"  height="200"></td>
+        <td> <img src="https://github.com/intelligence-csd-auth-gr/LionLearn/blob/master/lionLearnLogo.png" width="200"  height="200"></td>
         <td align="center"><p><h1>LionLearn</h1><h6>A library providing techniques for local interpretation of machine learning models</h6></p></td>
     </tr>
 </table>
@@ -12,10 +12,10 @@
 This library will provide ways to local explain machine learning models like random forests, 
 neural networks, etc. Every technique of this library will be model-specific and local-based. Currently there are the following two approaches available:
 
-1. [LioNets](https://github.com/iamollas/LionLearn/tree/master/LioNets): Local Interpretation Of Neural nETworkS through penultimate layer decoding
-2. [LioNets V2](https://github.com/iamollas/LionLearn/tree/master/LioNets_V2): LioNets: A Neural-Specific Local Interpretation Technique Exploiting Penultimate Layer Information
-3. [LionForests](https://github.com/iamollas/LionLearn/tree/master/LionForests): Conclusive Local Interpretation Rules for Random Forests
-4. [Preliminary LionForests](https://github.com/iamollas/LionLearn/tree/master/Perliminary_LionForests): Local Interpretation Of raNdom FORESts through paTh Selection
+1. [LioNets](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/LioNets): Local Interpretation Of Neural nETworkS through penultimate layer decoding
+2. [LioNets V2](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/LioNets_V2): LioNets: A Neural-Specific Local Interpretation Technique Exploiting Penultimate Layer Information
+3. [LionForests](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/LionForests): Conclusive Local Interpretation Rules for Random Forests
+4. [Preliminary LionForests](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/Perliminary_LionForests): Local Interpretation Of raNdom FORESts through paTh Selection
 
 ## Other related work of us:
 1. [Altruist](https://github.com/iamollas/Altruist): Argumentative Explanations through Local Interpretations of Predictive Models

@@ -28,7 +28,7 @@ Then, in your terminal copy the localhost url and open it in your browser. Enjoy
 ## Citation *Soon to be available*
 Please cite the paper if you use it in your work or experiments :D :
 
-- https://arxiv.org/abs/???
+- https://arxiv.org/abs/2104.06057
 
 ## Contributors on Altruist
 Name | Email

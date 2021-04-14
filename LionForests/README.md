@@ -77,6 +77,7 @@ Please cite the paper if you use it in your work or experiments :D :
 
 - [Journal] :
     - LionForests complete version submitted to journal
+    - https://arxiv.org/abs/2104.06040, available on Arxiv as well
 - [Conference] 
     - http://ceur-ws.org/Vol-2659/mollas.pdf, Accepted to NeHuAI of ECAI2020
     - https://arxiv.org/abs/1911.08780, available on arxiv as well

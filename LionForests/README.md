@@ -1,3 +1,4 @@
+Note: If you were directed here from the paper: "LionForests: local interpretation of random forests" please go to this folder: [Preliminary LionForests](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/Preliminary_LionForests)
 # LionForests
 <h4>Conclusive Local Interpretation Rules for Random Forests through LionForests</h4> 
 

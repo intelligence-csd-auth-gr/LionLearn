@@ -1,4 +1,4 @@
-# LioNets Version 2
+# LioNets (v2): A Neural-Specific Local Interpretation Technique Exploiting Penultimate Layer Information
 <h4>LioNets (Local Interpretations Of Neural Networks thourgh Penultimate Layer Decoding)</h4> 
 
 Building interpretable neural networks!

@@ -15,7 +15,7 @@ neural networks, etc. Every technique of this library will be model-specific and
 1. [LioNets](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/LioNets): Local Interpretation Of Neural nETworkS through penultimate layer decoding
 2. [LioNets V2](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/LioNets_V2): LioNets: A Neural-Specific Local Interpretation Technique Exploiting Penultimate Layer Information
 3. [LionForests](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/LionForests): Conclusive Local Interpretation Rules for Random Forests
-4. [Preliminary LionForests](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/Perliminary_LionForests): Local Interpretation Of raNdom FORESts through paTh Selection
+4. [Preliminary LionForests](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/Preliminary_LionForests): Local Interpretation Of raNdom FORESts through paTh Selection
 
 ## Other related work of us:
 1. [Altruist](https://github.com/iamollas/Altruist): Argumentative Explanations through Local Interpretations of Predictive Models

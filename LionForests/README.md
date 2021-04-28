@@ -50,7 +50,7 @@ print("Prediction and interpretation rule:", lf.explain(instance)[0])
 
 import pickle
 #Save the whole LF instance, which contains the model and the data statistics (but not the data themselves)
-pickle.dumb(lf, open('lf_model.sav','w'))
+pickle.dump(lf, open('lf_model.sav','wb'))
 ...
 
 #Load the LF instance

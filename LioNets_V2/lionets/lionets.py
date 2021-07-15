@@ -9,11 +9,12 @@ from sklearn.linear_model import Ridge, SGDRegressor
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import pandas as pd
 from utilities.duplicate_detection import double_distance_detector
+from keras.callbacks import ModelCheckpoint
 
 
 class LioNets:
     """Class for interpreting a neural network locally"""
-    def __init__(self, predictor, decoder, encoder, train_data, target_scaler=None, feature_names=None, decoder_lower_threshold=0, double_detector=False,  embeddings=False, tk=None):
+    def __init__(self, predictor, decoder, encoder, train_data, target_scaler=None, feature_names=None, decoder_lower_threshold=0, double_detector=False,  embeddings=False, tk=None, word_apheresis=False):
         """Init function
         Args:
             model: The trained predictor model
@@ -31,12 +32,14 @@ class LioNets:
         self.target_scaler = target_scaler
         self.feature_names = feature_names
         self.decoder_lower_threshold = decoder_lower_threshold
+        self.word_apheresis = word_apheresis
         self.double_detector = double_detector
         self.features_statistics = {}
         self.encoded_training_data = encoder.predict(train_data)
         self._extract_feature_statistics()
         self.embeddings = embeddings #boolean indication that we have embeddings
         self.tk = tk #tokenizer
+        self.memory = {}
 
     def explain_instance(self, new_instance, max_neighbours=None, model=None, random_state=0):
         """Generates the explanation for an instance
@@ -50,27 +53,59 @@ class LioNets:
             instance_prediction: 
             local_prediction:
         """
-        if self.embeddings:
-            neighbourhood, predictions, distances, local_feature_names = self._get_decoded_neighbourhood(new_instance, max_neighbours, random_state)
+        if len(new_instance.shape) == 2:
+            if tuple(list(new_instance.reshape((new_instance.shape[0]*new_instance.shape[1],)))+[max_neighbours]) in self.memory:
+                neighbourhood, predictions, distances = self.memory[tuple(list(new_instance.reshape((new_instance.shape[0]*new_instance.shape[1],)))+[max_neighbours])]
+            else:
+                neighbourhood, predictions, distances = self._get_decoded_neighbourhood(new_instance, max_neighbours, random_state)
+                self.memory[tuple(list(new_instance.reshape((new_instance.shape[0]*new_instance.shape[1],)))+[max_neighbours])] = [neighbourhood, predictions, distances]
         else:
-            neighbourhood, predictions, distances = self._get_decoded_neighbourhood(new_instance, max_neighbours, random_state)
-
+            if tuple(list(new_instance)+[max_neighbours]) in self.memory:
+                if self.embeddings:
+                    neighbourhood, predictions, distances, local_feature_names = self.memory[tuple(tuple(list(new_instance)+[max_neighbours]))]
+                else:
+                    neighbourhood, predictions, distances = self.memory[tuple(list(new_instance)+[max_neighbours])]
+            else:
+                if self.embeddings:
+                    neighbourhood, predictions, distances, local_feature_names = self._get_decoded_neighbourhood(new_instance, max_neighbours, random_state)
+                    self.memory[tuple(list(new_instance)+[max_neighbours])] = [neighbourhood, predictions, distances, local_feature_names]
+                else:
+                    neighbourhood, predictions, distances = self._get_decoded_neighbourhood(new_instance, max_neighbours, random_state)
+                    self.memory[tuple(list(new_instance)+[max_neighbours])] = [neighbourhood, predictions, distances]
+                
         instance_prediction = predictions[-1]
 
-        #if not 1D representation reshape
-        if len(new_instance.shape) == 2: #only for 1 or 2 dimension
-            one_dimension_size = new_instance.shape[0] * new_instance.shape[1]
-            neighbourhood = neighbourhood.reshape((len(neighbourhood),one_dimension_size))
-
         #train linear model
-        linear_model = self._fit_linear_model(neighbourhood, predictions, distances, model)
-        weights = linear_model.coef_
+        if str(type(model)) == "<class 'keras.engine.training.Model'>":
+            checkpoint_name = 'local.hdf5' 
+            checkpoint = ModelCheckpoint(checkpoint_name, monitor='loss', verbose = 0, save_best_only = True, mode ='auto')
+            
+            model.fit(np.array(neighbourhood), np.array(predictions),
+                                     epochs=10, batch_size=64, sample_weight=np.array(distances), shuffle=True, 
+                                     callbacks=[checkpoint], verbose=0)
+            model.load_weights('local.hdf5') # load it
+            weights = [i for i in model.layers[-1].get_weights()[0]]
 
-        local_prediction = linear_model.predict([neighbourhood[-1]])[0]
-        if self.embeddings:
-            return weights, instance_prediction, local_prediction, local_feature_names, neighbourhood[-1]
+            local_prediction = model.predict(np.array([neighbourhood[-1],neighbourhood[-1]]))[0]
+            if self.embeddings:
+                return weights, instance_prediction, local_prediction, local_feature_names, neighbourhood[-1]
+            else:
+                return weights, instance_prediction, local_prediction
         else:
-            return weights, instance_prediction, local_prediction
+            
+            #if not 1D representation reshape
+            if len(new_instance.shape) == 2: #only for 1 or 2 dimension
+                one_dimension_size = new_instance.shape[0] * new_instance.shape[1]
+                neighbourhood = neighbourhood.reshape((len(neighbourhood),one_dimension_size))
+
+            linear_model = self._fit_linear_model(neighbourhood, predictions, distances, model)
+            weights = linear_model.coef_
+
+            local_prediction = linear_model.predict([neighbourhood[-1]])[0]
+            if self.embeddings:
+                return weights, instance_prediction, local_prediction, local_feature_names, neighbourhood[-1]
+            else:
+                return weights, instance_prediction, local_prediction
 
     def _get_decoded_neighbourhood(self, instance, max_neighbours=None, random_state=0):
         """Returns
@@ -91,7 +126,23 @@ class LioNets:
                 for j in dn:
                     temp_ind.append(np.argmax(j))
                 a_n.append(temp_ind)
+                
+            if self.word_apheresis:    
+                for i in set(instance):
+                    temp1 = []
+                    temp2 = []
+                    for l in range(len(instance)):
+                        if instance[l] == i:
+                            temp1.append(0)
+                            temp2.append(1)
+                        else:
+                            temp1.append(instance[l])
+                            temp2.append(instance[l])
+                    a_n.append(temp1)
+                    a_n.append(temp2)
+                
             decoded_neighbourhood = a_n
+          
         
         if self.double_detector:
             decoded_neighbourhood = double_distance_detector(decoded_neighbourhood) #Check for duplicates
@@ -132,15 +183,29 @@ class LioNets:
             return neighbourhood, predictions, distances, temp_vec.get_feature_names()
         else:
             temp_neighbourhood = [neighbour for neighbour in decoded_neighbourhood]
-            temp_neighbourhood.append(instance)
             neighbourhood = np.array(temp_neighbourhood)
 
             if self.decoder_lower_threshold != 0: #TFIDF vectors:
                 for neighbour in range(len(neighbourhood)):
                     for feature in range(len(neighbourhood[neighbour])):
                         if neighbourhood[neighbour][feature] <= self.decoder_lower_threshold:
-                            neighbourhood[neighbour][feature]=0
+                            neighbourhood[neighbour][feature] = 0
+                if self.word_apheresis:
+                    t_neighbourhood = list(temp_neighbourhood)
+                    for ii in range(len(instance)):
+                        temp = instance.copy()
+                        temp2 = instance.copy()
+                        if temp[ii] != 0:
+                            temp[ii] = 0
+                            temp2[ii] = 1
+                        t_neighbourhood.append(temp)
+                        t_neighbourhood.append(temp2)
+                    neighbourhood = np.array(t_neighbourhood)
 
+            temp_neighbourhood = [neighbour for neighbour in neighbourhood]
+            temp_neighbourhood.append(instance)
+            neighbourhood = np.array(temp_neighbourhood)
+            
             temp_distances = euclidean_distances([encoded_instance],self.encoder.predict(neighbourhood))[0]
             distances = []
             dimensions = len(encoded_instance)

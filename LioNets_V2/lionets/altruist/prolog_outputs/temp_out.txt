@@ -1,29 +1,29 @@
 F1 is indeed untruthful
 F1 is untruthful
-F2 is indeed untruthful
+F2 is not untruthful
 F2 is untruthful
-F3 is not untruthful
+F3 is indeed untruthful
 F3 is untruthful
-F4 is indeed untruthful
+F4 is not untruthful
 F4 is untruthful
 F5 is indeed untruthful
 F5 is untruthful
-F6 is indeed untruthful
+F6 is not untruthful
 F6 is untruthful
-F7 is not untruthful
+F7 is indeed untruthful
 F7 is untruthful
-F8 is not untruthful
+F8 is indeed untruthful
 F8 is untruthful
 F9 is indeed untruthful
 F9 is untruthful
-F10 is indeed untruthful
+F10 is not untruthful
 F10 is untruthful
 F11 is not untruthful
 F11 is untruthful
-F12 is indeed untruthful
+F12 is not untruthful
 F12 is untruthful
-F13 is indeed untruthful
+F13 is not untruthful
 F13 is untruthful
-F14 is not untruthful
+F14 is indeed untruthful
 F14 is untruthful
-ERROR: -g consult('altruist/prolog_outputs/temp_4.pl'), untrusted('Explanation'): false
+ERROR: -g consult('altruist/prolog_outputs/temp_1.pl'), untrusted('Explanation'): false

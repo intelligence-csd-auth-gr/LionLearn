@@ -116,11 +116,17 @@ class Altruist:
             untruthful_features = []
             os.system('swipl -g "consult('+a+'), untrusted('+b+')" 2>&1 | tee altruist/prolog_outputs/temp_out.txt')
             tf = open("altruist/prolog_outputs/temp_out.txt","r")
+            count = 0
             for x in tf:
+                count = count + 1
                 if 'indeed' in x:
                     untruthful_features.append(self.map_feature_names[x.split()[0]])
             tf.close()
-            fi_truthfulness.append(untruthful_features)
+            if count == 1:
+                fi_truthfulness.append(self.feature_names)
+            else:
+                fi_truthfulness.append(untruthful_features)
+            
         return fi_truthfulness, counter_factuals
         
     def _prolog_query_explain(self, instance, fi, truthful_only):

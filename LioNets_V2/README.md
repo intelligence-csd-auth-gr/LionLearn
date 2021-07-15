@@ -25,6 +25,15 @@ docker run -p 8888:8888 johnmollas/lionets
 ```
 Then, in your terminal copy the localhost url and open it in your browser. Enjoy :)
 
+If you want to build the docker by yourself please zip the folder lionets with the requirements.txt file and name the zip "lionets.zip". Then:
+```bash
+docker build -t my_lionets_docker .
+```
+After succesfully building LioNets, please do:
+```bash
+docker run -p 8888:8888 my_lionets_docker
+```
+
 ## Citation *Soon to be available*
 Please cite the paper if you use it in your work or experiments :D :
 

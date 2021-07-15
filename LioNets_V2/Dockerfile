@@ -22,11 +22,11 @@ RUN pip install --upgrade setuptools
 RUN pip install --no-cache-dir -r requirements.txt
 RUN rm /usr/src/app/requirements.txt
 
-RUN cp /usr/src/app/checks.py /usr/local/lib/python3.7/site-packages/innvestigate/utils/keras
-RUN rm /usr/src/app/checks.py
+RUN cp /usr/src/app/lionets/utilities/checks.py /usr/local/lib/python3.7/site-packages/innvestigate/utils/keras
+RUN rm /usr/src/app/lionets/utilities/checks.py
 
-RUN cp /usr/src/app/relevance_analyzer.py /usr/local/lib/python3.7/site-packages/innvestigate/analyzer/relevance_based
-RUN rm /usr/src/app/relevance_analyzer.py
+RUN cp /usr/src/app/lionets/utilities/relevance_analyzer.py /usr/local/lib/python3.7/site-packages/innvestigate/analyzer/relevance_based
+RUN rm /usr/src/app/lionets/utilities/relevance_analyzer.py
 RUN python3 -m pip install --upgrade notebook
 
 CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root"]

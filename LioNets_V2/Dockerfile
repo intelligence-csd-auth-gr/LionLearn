@@ -19,8 +19,8 @@ RUN rm /usr/src/app/lionets.zip
 
 RUN pip install --upgrade setuptools
 
-RUN pip install --no-cache-dir -r requirements.txt
-RUN rm /usr/src/app/requirements.txt
+RUN pip install --no-cache-dir -r /usr/src/app/lionets/requirements.txt
+RUN rm /usr/src/app/lionets/requirements.txt
 
 RUN cp /usr/src/app/lionets/utilities/checks.py /usr/local/lib/python3.7/site-packages/innvestigate/utils/keras
 RUN rm /usr/src/app/lionets/utilities/checks.py

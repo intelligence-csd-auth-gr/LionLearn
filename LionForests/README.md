@@ -17,7 +17,11 @@ docker run -p 8888:8888 lionforests
 Then, just open the url the terminal prined and you are ready to play with the notebooks. 
 
 ## Pull from Docker and pip install
-!TBA
+```bash
+docker pull johnmollas/lionforests .
+docker run -p 8888:8888 johnmollas/lionforests
+```
+!pip command TBA!
 
 ## Requirements
 For the requirements just check the requirements.txt file. LF in order to run properly needs these libraries. The libraries anchor-exp, dask-ml, imbalanced-learn and pyfpgrowth, are necessary for the rest of the algorithms we used in our comparisons (CHIRPS, Anchors, DeFrag Rules).
@@ -71,7 +75,7 @@ Comparison | 9 | All
 Conclusive Check | 1 | Binary Classification
 Qualitative Example | 1 | Binary Classification
 Categorical Features | 1 | Binary Classification
-
+Scalability | 16 | All
 
 ## Citation
 Please cite the paper if you use it in your work or experiments :D :

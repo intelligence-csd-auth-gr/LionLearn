@@ -236,7 +236,7 @@ class LionForests:
                 all_features.append(f)
             return pd.concat([ore, num], axis=1), train_target, all_features
 
-    def fit(self, train_data, train_target, params=None):
+    def fit(self, train_data, train_target, params=None, prepare_distribution_plots=False):
         """ train function is used to train an RF model and extract information like accuracy, model, trees and
         min_max_feature_values among all trees
         Args:
@@ -246,8 +246,8 @@ class LionForests:
             feature_names: The names of the features from our dataset
             params: The parameters for our gridSearchCV to select the best RF model
         """
-        self._prepare_distribution_plots(
-            train_data)  # Before scaling because we are going to inverse the explanations in the end.
+        if prepare_distribution_plots:
+                self._prepare_distribution_plots(train_data)  # Before scaling because we are going to inverse the explanations in the end.
         self.utilizer.fit(train_data)
         train_data = self.utilizer.transform(train_data)
         if self.mode == 'R':

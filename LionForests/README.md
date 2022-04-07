@@ -87,6 +87,9 @@ Please cite the paper if you use it in your work or experiments :D :
     - http://ceur-ws.org/Vol-2659/mollas.pdf, Accepted to NeHuAI of ECAI2020
     - https://arxiv.org/abs/1911.08780, available on arxiv as well
 
+## Debugging
+When running the Comparison Notebooks, if you have any problems with CHIRPS, just try changing asyng_walk from True to False. 
+
 ## Contributors on Altruist
 Name | Email
 --- | ---

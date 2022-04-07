@@ -24,7 +24,7 @@ neural networks, etc. Every technique of this library will be model-specific and
 <table align="center">
     <tr>
         <td><p>This project is supported by the European Union's Horizon 2020 research and innovation programme under grant agreement No 825619, <a href="https://www.ai4eu.eu">AI4EU Project</a>.</p></td>
-        <td><img src="https://www.ai4eu.eu/themes/custom/ai4eu/logo.svg" width=150 height=100</td>
+        <td><img src="https://www.ai4europe.eu/sites/default/files/logo_ai4eu.svg" width=150 height=100</td>
     </tr>
 </table>
 

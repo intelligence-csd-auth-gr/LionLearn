@@ -159,10 +159,10 @@ class RuleModel(object):
             t_k = np.array(k)
             if t_k.sum() == len(k):
                 rule_length = rule_length + len(k)
-                return rule_length * [0]
+                return rule_length * [0], Z
             else:
                 rule_length = rule_length + k.index(False) + 1
-        return rule_length * [0]
+        return rule_length * [0], Z
     
     def predict(self, X, rnum=-1):
         num = X.shape[0]

@@ -1,4 +1,4 @@
-anchor-exp==0.0.2.0
+lime==0.2.0
 dask-ml==1.7.0
 imbalanced-learn==0.7.0
 ipython==7.18.1

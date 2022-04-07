@@ -5,7 +5,7 @@ import random
 GitHub clone of: https://github.com/letiantian/kmedoids
 """
 
-def kMedoids(D, k, tmax=100):
+def kMedoids(D, k, tmax=100, random_state=2000):
     # determine dimensions of distance matrix D
     m, n = D.shape
 
@@ -19,7 +19,7 @@ def kMedoids(D, k, tmax=100):
     rs,cs = np.where(D==0)
     # the rows, cols must be shuffled because we will keep the first duplicate below
     index_shuf = list(range(len(rs)))
-    np.random.seed(2000)
+    np.random.seed(random_state)
     np.random.shuffle(index_shuf)
     rs = rs[index_shuf]
     cs = cs[index_shuf]
@@ -36,7 +36,7 @@ def kMedoids(D, k, tmax=100):
 
     # randomly initialize an array of k medoid indices
     M = np.array(valid_medoid_inds)
-    np.random.seed(1000)
+    np.random.seed(int(random_state/2))
     np.random.shuffle(M)
     M = np.sort(M[:k])
 

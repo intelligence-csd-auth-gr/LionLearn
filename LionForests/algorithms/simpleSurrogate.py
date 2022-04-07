@@ -3,10 +3,11 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 
 class GlobalSurrogateTree:
-    def __init__(self, x, y, feature_names, task):
+    def __init__(self, x, y, feature_names, task, random_state=10):
+        
         self.feature_names = feature_names
         if task=='classification':
-            dtree = DecisionTreeClassifier(random_state = 10)
+            dtree = DecisionTreeClassifier(random_state = random_state)
             parameters = [{
                 'criterion': ['gini','entropy'],
                 'splitter': ['best','random'],
@@ -16,11 +17,11 @@ class GlobalSurrogateTree:
             }]
             clf = GridSearchCV(estimator=dtree, param_grid=parameters, cv=10, n_jobs=-1, verbose=0, scoring='f1_weighted')
         else:
-            dtree = DecisionTreeRegressor(random_state = 10)
+            dtree = DecisionTreeRegressor(random_state = random_state)
             parameters = [{
-                'criterion': ['mse', 'friedman_mse', 'mae', 'poisson'],
+                'criterion': ['mse', 'mae'],#, 'poisson'],
                 'splitter': ['best','random'],
-                'max_depth': [1, 2, 5, 10, None],
+                'max_depth': [1, 2, 5],#, 10, None],
                 'max_features': ['sqrt', 'log2', 0.75, None],#['sqrt', 'log2', 0.75, None], #'sqrt', 'log2', 0.75, None
                 'min_samples_leaf' : [1, 2, 5, 10],#[1, 2, 5, 10, 0.10], #1, 2, 5, 10, 0.10
             }]
@@ -50,7 +51,7 @@ class GlobalSurrogateTree:
         return local_range, self.model.predict([instance])[0]
     
 class LocalSurrogateTree:
-    def __init__(self, x, y, feature_names, task, neighbours=None):
+    def __init__(self, x, y, feature_names, task, neighbours=None, random_state=10):
         self.x = x
         self.y = y
         self.neighbours = neighbours
@@ -61,7 +62,7 @@ class LocalSurrogateTree:
             neighbours_generator = KNeighborsClassifier(n_neighbors=self.neighbours, weights="distance", metric="minkowski", p=2)
             neighbours_generator.fit(self.x, self.y)
             self.neighbours_generator = neighbours_generator
-            dtree = DecisionTreeClassifier(random_state = 10)
+            dtree = DecisionTreeClassifier(random_state = random_state)
             parameters = [{
                 'criterion': ['gini','entropy'],
                 'splitter': ['best','random'],
@@ -74,11 +75,11 @@ class LocalSurrogateTree:
             neighbours_generator = KNeighborsRegressor(n_neighbors=self.neighbours, weights="distance", metric="minkowski", p=2)
             neighbours_generator.fit(self.x, self.y)
             self.neighbours_generator = neighbours_generator
-            dtree = DecisionTreeRegressor(random_state = 10)
+            dtree = DecisionTreeRegressor(random_state = random_state)
             parameters = [{
-                'criterion': ['mse', 'friedman_mse', 'mae', 'poisson'],
+                'criterion': ['mse', 'mae'],
                 'splitter': ['best','random'],
-                'max_depth': [1, 2, 5, 10, None],
+                'max_depth': [1, 2, 5],#, 10, None],
                 'max_features': ['sqrt', 'log2', 0.75, None],#['sqrt', 'log2', 0.75, None], #'sqrt', 'log2', 0.75, None
                 'min_samples_leaf' : [1, 2, 5, 10],#[1, 2, 5, 10, 0.10], #1, 2, 5, 10, 0.10
             }]

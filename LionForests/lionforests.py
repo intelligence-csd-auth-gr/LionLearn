@@ -389,7 +389,7 @@ class LionForests:
                     return ranges, other_paths
         return ranges, probabilities
 
-    def explain(self, instance, reduction=True, ar_algorithm=None, cl_algorithm=None, save_plots=False, instance_qe=0, clusters=0, method='123', to_vis=False):
+    def explain(self, instance, reduction=True, ar_algorithm=None, cl_algorithm=None, save_plots=False, instance_qe=0, clusters=0, method='123', to_vis=False, instance_random_state=77):
         """Explain function finds a single range rule which will be the explanation for the prediction
         of this instance
         Args:
@@ -400,6 +400,7 @@ class LionForests:
         Return:
             a feature range rule which will be the explanation
         """
+        self.instance_random_state = instance_random_state
         original_instance = instance.copy()
 
         # It will fill in only if AR reduction will be applied!
@@ -941,7 +942,7 @@ class LionForests:
                 # Then we run our clustering algorithm
                 try:
                     MS, clusters = kMedoids(
-                        similarity_matrix, number_of_clusters)
+                            similarity_matrix, number_of_clusters, random_state=self.instance_random_state)
                     clusters_sorted = sorted(
                         clusters, key=lambda k: len(clusters[k]), reverse=True)
                 except:
@@ -966,7 +967,7 @@ class LionForests:
             else:  # if cl_algorithm == 'SC':
                 try:
                     clustering = SpectralClustering(
-                        n_clusters=number_of_clusters, affinity='precomputed', random_state=0).fit(similarity_matrix)
+                        n_clusters=number_of_clusters, affinity='precomputed', random_state=self.instance_random_state).fit(similarity_matrix)
                     x = clustering.labels_
                     set(x)
                     clusters = {}
@@ -1002,7 +1003,7 @@ class LionForests:
         reduced_probabilities = probabilities
 
         if np.array(reduced_probabilities).sum()/self.number_of_estimators > 0.5 and len(reduced_rules) >= instance_qe:
-            random.seed(2000+len(str(ar_algorithm)) +
+            random.seed(self.instance_random_state+len(str(ar_algorithm)) +
                         len(str(cl_algorithm))+len(reduced_rules))
             random.shuffle(reduced_rules)
             reduced_rules_t = reduced_rules
@@ -1025,7 +1026,7 @@ class LionForests:
         min_errors = abs(instance_qe)
         min_s = 0
         for s in [.1, .2, .5, 1, 2, 4, 5, 6, 7, 8, 9, 10, 20, 50, 100]:
-            np.random.seed(int(instance.sum()*(instance.sum()/2)/10))
+            np.random.seed(self.instance_random_state+int(instance.sum()*(instance.sum()/2)/10))
             normal_dis = np.random.normal(
                 real_prediction, np.array(predictions).std()/s, 100)
 

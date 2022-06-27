@@ -81,7 +81,7 @@ Scalability | 16 | All
 Please cite the paper if you use it in your work or experiments :D :
 
 - [Journal] :
-    - LionForests complete version submitted to journal
+    - LionForests complete version published at [DAMI]: https://link.springer.com/article/10.1007/s10618-022-00839-y
     - https://arxiv.org/abs/2104.06040, available on Arxiv as well
 - [Conference] 
     - http://ceur-ws.org/Vol-2659/mollas.pdf, Accepted to NeHuAI of ECAI2020
@@ -90,7 +90,7 @@ Please cite the paper if you use it in your work or experiments :D :
 ## Debugging
 When running the Comparison Notebooks, if you have any problems with CHIRPS, just try changing asyng_walk from True to False. 
 
-## Contributors on Altruist
+## Contributors on LionForests
 Name | Email
 --- | ---
 [Ioannis Mollas](https://intelligence.csd.auth.gr/people/ioannis-mollas/) | iamollas@csd.auth.gr

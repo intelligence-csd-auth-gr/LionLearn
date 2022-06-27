@@ -1,26 +1,28 @@
-Note: If you were directed here from the paper: "LionForests: local interpretation of random forests" please go to this folder: [Preliminary LionForests](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/Preliminary_LionForests)
 # LionForests
-<h4>Conclusive Local Interpretation Rules for Random Forests through LionForests</h4> 
+<h4>Local Multi-Label Explanations for Random Forest</h4> 
 
 Due to their exceptionally high ability for analyzing vast quantities of data and making accurate decisions, machine learning systems are integrated into the health, industry and banking sectors, among others. On the other hand, their obscure decision-making processes lead to socio-ethical issues as they interfere with people's lives.  
 
 ![LionForests Flowchart](https://github.com/intelligence-csd-auth-gr/LionLearn/blob/master/LionForests/LionForestsFlow.png?raw=true)
 
-In critical situations involving discrimination, gender inequality, economic damage, and even the possibility of casualties, machine learning models must be able to provide clear interpretations for their decisions. Otherwise, their obscure decision-making processes can lead to socioethical issues as they interfere with people's lives. In the aforementioned sectors, random forest algorithms strive, thus their ability to explain themselves is an obvious requirement. In this paper, we present LionForests, which relies on a preliminary work of ours. LionForests is a random forest-specific interpretation technique, which provides rules as explanations. It is applicable from binary classification tasks to multi-class classification and regression tasks, and it is supported by a stable theoretical background. Experimentation, including sensitivity analysis and comparison with state-of-the-art techniques, is also performed to demonstrate the efficacy of our contribution. Finally, we highlight a property of LionForest that distinguishes it from other techniques that do not have this property.
+Multi-label classification is a challenging task, particularly in domains where the number of labels to be predicted is large. Deep neural networks are often effective at multi-label classification of images and textual data. When dealing with tabular data, however, conventional machine learning algorithms, such as tree ensembles, appear to outperform competition. Random forest, being the most common of these ensembles, has found use in a wide range of real-world problems. Such problems include fraud detection in the financial domain, crime hotspot detection in the legal sector, and in the biomedical field, disease probability prediction when patient records are accessible. Since they have an impact on people's lives, these domains usually require decision-making systems to be explainable. Random Forest falls short on this property, especially when a large number of tree predictors are used. This issue was addressed in a recent research named LionForests, regarding single label classification and regression. In this work, we adapt this technique to multi-label classification problems, by employing three different strategies regarding the labels that the explanation covers. Finally, we provide a set of qualitative and quantitative experiments to assess the efficacy of this approach.
 
 ## Run through Docker
 Clone this repository and navigate to the folder LionForests/Docker. There run these commands
 ```bash
-docker build -t lionforests .
-docker run -p 8888:8888 lionforests
+docker build -t lionforests-multi .
+docker run -p 8888:8888 lionforests-multi
 ```
 Then, just open the url the terminal prined and you are ready to play with the notebooks. 
 
 ## Pull from Docker and pip install
-!TBA
+```bash
+docker pull johnmollas/multi-lf .
+docker run -p 8888:8888 johnmollas/multi-lf
+```
 
 ## Requirements
-For the requirements just check the requirements.txt file. LF in order to run properly needs these libraries. The libraries anchor-exp, dask-ml, imbalanced-learn and pyfpgrowth, are necessary for the rest of the algorithms we used in our comparisons (CHIRPS, Anchors, DeFrag Rules).
+For the requirements just check the requirements.txt file. LF in order to run properly needs these libraries. The libraries anchor-exp, dask-ml, imbalanced-learn and pyfpgrowth, are necessary for the rest of the algorithms we used in our comparisons (CHIRPS, Anchors, MARLENA).
 
 
 ## Example #1
@@ -63,29 +65,22 @@ print("Prediction and interpretation rule:", lf.explain(instance)[0])
 ## Experiments
 Type | # of  Datasets | Task 
 --- | --- | --- 
-Sensitivity Analysis | 3 | Binary Classification
-Sensitivity Analysis | 3 | Multi-class Classification
-Sensitivity Analysis | 3 | Regression
-Time Analysis | 2 | Binary Classification
-Comparison | 9 | All
-Conclusive Check | 1 | Binary Classification
-Qualitative Example | 1 | Binary Classification
-Categorical Features | 1 | Binary Classification
+Comparison | 4 | Multi-Label Classification
+Qualitative Example | 1 | Multi-Label Classification
 
 
 ## Citation
 Please cite the paper if you use it in your work or experiments :D :
-
 - [Journal] :
-    - LionForests complete version submitted to journal
+    - LionForests complete version published at [DAMI]: https://link.springer.com/article/10.1007/s10618-022-00839-y
     - https://arxiv.org/abs/2104.06040, available on Arxiv as well
 - [Conference] 
-    - http://ceur-ws.org/Vol-2659/mollas.pdf, Accepted to NeHuAI of ECAI2020
-    - https://arxiv.org/abs/1911.08780, available on arxiv as well
+    - To Appear in Workshop Proceedings
 
-## Contributors on Altruist
+## Contributors on Multi LionForests
 Name | Email
 --- | ---
+[Nikolaos Mylonas](https://intelligence.csd.auth.gr/people/people-nikos-mylonas-phd-student/) | myloniko@csd.auth.gr
 [Ioannis Mollas](https://intelligence.csd.auth.gr/people/ioannis-mollas/) | iamollas@csd.auth.gr
 [Grigorios Tsoumakas](https://intelligence.csd.auth.gr/people/tsoumakas/) | greg@csd.auth.gr
 [Nick Bassiliades](https://intelligence.csd.auth.gr/people/bassiliades/) | nbassili@csd.auth.gr

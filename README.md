@@ -16,6 +16,7 @@ neural networks, etc. Every technique of this library will be model-specific and
 2. [LioNets V2](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/LioNets_V2): LioNets: A Neural-Specific Local Interpretation Technique Exploiting Penultimate Layer Information
 3. [LionForests](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/LionForests): Conclusive Local Interpretation Rules for Random Forests
 4. [Preliminary LionForests](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/Preliminary_LionForests): Local Interpretation Of raNdom FORESts through paTh Selection
+5. [Multi LionForests](https://github.com/intelligence-csd-auth-gr/LionLearn/tree/master/LionForests_Multi): Local Multi-Label Explanations for Random Forest
 
 ## Other related work of us:
 1. [Altruist](https://github.com/iamollas/Altruist): Argumentative Explanations through Local Interpretations of Predictive Models
@@ -32,5 +33,6 @@ neural networks, etc. Every technique of this library will be model-specific and
 Name | Email
 --- | ---
 Ioannis Mollas | iamollas@csd.auth.gr
+Nikolaos Mylonas | myloniko@csd.auth.gr
 Grigorios Tsoumakas | greg@csd.auth.gr
 Nick Bassiliades | nbassili@csd.auth.gr
